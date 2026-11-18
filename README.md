@@ -4,9 +4,9 @@ Connects your assistant to the **Meeting Minutes** Mac app, so it can work with 
 
 ## What it starts
 
-The plug-in holds one small shell script. When the assistant starts, the script looks for the Meeting Minutes app in `/Applications` or `~/Applications` and runs the helper program that ships inside that app. Nothing else is started, and the plug-in installs nothing on your Mac. The script lists no tools: the app itself tells the assistant what it can do, so the list always matches the version of the app you have.
+The plug-in holds one small program, `relay/mm-mcp-relay`, whose source is in `relay-src/`. When the assistant starts, the program looks for the Meeting Minutes app in `/Applications` or `~/Applications`, starts it in the background if needed, and passes the assistant's requests to it over a private socket on your Mac. Nothing else is started, and the plug-in installs nothing. The program lists no tools: the app itself tells the assistant what it can do, so the list always matches the version of the app you have.
 
-If the app is not installed, the assistant gets a clear "not installed" error instead of a hang.
+If the app is not installed, the assistant gets a clear "not available" error instead of a hang.
 
 ## What data it sends
 

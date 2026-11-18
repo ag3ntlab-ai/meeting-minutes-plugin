@@ -1,8 +1,7 @@
 {
   "mcpServers": {
     "meeting-minutes": {
-      "command": "bash",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/mm-mcp.sh"]
+      "command": "${CLAUDE_PLUGIN_ROOT}/relay/mm-mcp-relay"
     }
   }
 }
