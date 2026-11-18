@@ -1,0 +1,8 @@
+{
+  "name": "meeting-minutes",
+  "version": "0.1.0",
+  "description": "Lets your assistant work with the Meeting Minutes Mac app on your own Mac. The app must be installed.",
+  "author": { "name": "ag3ntlab" },
+  "license": "MIT",
+  "keywords": ["meetings", "mac", "local"]
+}
