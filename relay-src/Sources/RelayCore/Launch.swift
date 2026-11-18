@@ -39,15 +39,15 @@ public struct LaunchMarker: Codable, Equatable {
 }
 
 public enum AppLocator {
-    /// First installed Meeting Minutes app: explicit path, then standard folders, then Launch Services.
+    /// First installed Meeting Minutes app: explicit path, then standard folders.
     public static func find(environment: [String: String] = ProcessInfo.processInfo.environment,
                             home: String = NSHomeDirectory()) -> URL? {
         var candidates: [URL] = []
         if let explicit = environment["MM_APP_PATH"], !explicit.isEmpty { candidates.append(URL(fileURLWithPath: explicit)) }
         let dirs = (environment["MM_APP_DIRS"] ?? "/Applications:\(home)/Applications").split(separator: ":").map(String.init)
         candidates += dirs.map { URL(fileURLWithPath: $0).appendingPathComponent("Meeting Minutes.app") }
-        for url in candidates where isMeetingMinutes(url) { return url }
-        return NSWorkspace.shared.urlForApplication(withBundleIdentifier: Endpoint.bundleIdentifier).flatMap { isMeetingMinutes($0) ? $0 : nil }
+        // yagni: no Launch Services lookup by bundle identifier; an app installed elsewhere sets MM_APP_PATH.
+        return candidates.first(where: isMeetingMinutes)
     }
     /// Read the plist itself and require our identifier: the relay launches only our own app.
     static func isMeetingMinutes(_ app: URL) -> Bool {
