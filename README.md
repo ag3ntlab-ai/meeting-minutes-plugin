@@ -2,6 +2,22 @@
 
 Connects your assistant to the **Meeting Minutes** Mac app, so it can work with the meetings kept on your own Mac. The app is a separate download and must be installed first.
 
+## Install
+
+You need Claude Code and the Meeting Minutes Mac app. In your terminal, add the marketplace once, then install the plug-in:
+
+```
+claude plugin marketplace add ag3ntlab-ai/meeting-minutes-plugin
+claude plugin install meeting-minutes@ag3ntlab
+```
+
+Or do the same from inside a Claude Code session:
+
+```
+/plugin marketplace add ag3ntlab-ai/meeting-minutes-plugin
+/plugin install meeting-minutes@ag3ntlab
+```
+
 ## What it starts
 
 The plug-in holds one small shell script. When the assistant starts, the script looks for the Meeting Minutes app in `/Applications` or `~/Applications` and runs the helper program that ships inside that app. Nothing else is started, and the plug-in installs nothing on your Mac. The script lists no tools: the app itself tells the assistant what it can do, so the list always matches the version of the app you have.

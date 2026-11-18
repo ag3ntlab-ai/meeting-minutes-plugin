@@ -1,0 +1,8 @@
+{
+  "name": "ag3ntlab",
+  "owner": { "name": "ag3ntlab" },
+  "metadata": { "description": "Plug-ins by ag3ntlab for Claude Code." },
+  "plugins": [
+    { "name": "meeting-minutes", "source": "./" }
+  ]
+}
