@@ -5,7 +5,7 @@ import Darwin
 // four-byte big-endian length frames, an admission frame sent first by the app.
 
 public enum RelayError: Error, Equatable {
-    case invalidFrame, correlation, version, timeout, unavailable, peerDenied, system(Int32)
+    case invalidFrame, correlation, version, timeout, unavailable, peerDenied, disabled, system(Int32)
 }
 
 public struct AutomationRequest: Codable, Sendable {

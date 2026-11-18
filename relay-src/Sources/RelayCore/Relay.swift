@@ -75,7 +75,7 @@ public final class RelayServer {
     /// does, only `{version, operations}`; then each name becomes a tool with no schema.
     func catalog() throws -> [[String: Any]] {
         let response = try exchange(.init(operation: Self.discoverOperation), 5)
-        if let failure = response.error { throw NSError(domain: "discover", code: 1, userInfo: [NSLocalizedDescriptionKey: failure.message]) }
+        if let failure = response.error { throw failure.code == "automation_disabled" ? RelayError.disabled : RelayError.unavailable }
         guard let data = response.result, let object = try JSONSerialization.jsonObject(with: data) as? [String: Any] else { throw RelayError.invalidFrame }
         if let tools = object["tools"] as? [[String: Any]] {
             return tools.compactMap { tool in
@@ -91,7 +91,8 @@ public final class RelayServer {
 
     static func text(for error: Error) -> String {
         switch error as? RelayError {
-        case .peerDenied: return "Meeting Minutes refused this connection. Check that agent access is turned on in the app."
+        case .peerDenied: return "Meeting Minutes refused this connection: it only accepts the same macOS user, in a session it allows."
+        case .disabled: return "Agent access is turned off in Meeting Minutes. Turn it on in the app settings, then try again."
         case .timeout: return "Meeting Minutes did not answer in time."
         default: return "Meeting Minutes is not available. Make sure the app is installed, then try again."
         }

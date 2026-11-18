@@ -19,14 +19,14 @@ let server = RelayServer { request, timeout in
     return try transport.exchange(request, timeout: timeout)
 }
 
-var pending = Data()
+var buffer = Data()
 while true {
     let chunk = FileHandle.standardInput.availableData
     if chunk.isEmpty { break }
-    pending.append(chunk)
-    if pending.count > Frame.maximumSize { FileHandle.standardError.write(Data("mm-mcp-relay: oversized stdio message\n".utf8)); exit(1) }
-    while let newline = pending.firstIndex(of: 10) {
-        let line = Data(pending[..<newline]); pending.removeSubrange(...newline)
+    buffer.append(chunk)
+    if buffer.count > Frame.maximumSize { FileHandle.standardError.write(Data("mm-mcp-relay: oversized stdio message\n".utf8)); exit(1) }
+    while let newline = buffer.firstIndex(of: 10) {
+        let line = Data(buffer[..<newline]); buffer.removeSubrange(...newline)
         if let out = server.handle(line: line) { FileHandle.standardOutput.write(out + Data([10])) }
     }
 }
