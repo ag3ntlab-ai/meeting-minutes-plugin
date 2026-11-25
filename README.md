@@ -24,7 +24,7 @@ The plug-in holds one small shell script. When the assistant starts, the script 
 
 If the app is closed, the first call starts it in the background, without a window.
 
-If the app is not installed, the assistant gets a clear "not installed" error instead of a hang.
+If the app is not installed, the assistant sees a single setup tool, and calling it answers that Meeting Minutes is not installed, so the assistant can tell you what to do instead of failing.
 
 ## What data it sends
 

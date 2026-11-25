@@ -113,7 +113,9 @@ def run_session(server):
         check("initialize.protocolVersion", isinstance(version, str) and bool(version.strip()), detail)
 
         response, detail = exchange(requests[2])
-        check("tools.error", is_error(response), detail)
+        tools = response.get("result", {}).get("tools") if isinstance(response.get("result"), dict) else None
+        check("tools.result", response.get("jsonrpc") == "2.0" and "error" not in response
+              and isinstance(tools, list) and len(tools) == 1, detail)
         check("tools.id", same_id(response, 2), detail)
 
         process.stdin.close()
@@ -165,8 +167,9 @@ for name, (passed, detail) in real_checks.items():
 error_reply = {"jsonrpc": "2.0", "id": 7, "error": {
     "code": -32000, "message": "Meeting Minutes is not installed on this Mac."}}
 initialize_reply = {"jsonrpc": "2.0", "id": 8, "result": {"protocolVersion": "2024-11-05"}}
-tools_reply = {"jsonrpc": "2.0", "id": 9, "error": {
-    "code": -32000, "message": "Meeting Minutes is not installed on this Mac."}}
+tools_reply = {"jsonrpc": "2.0", "id": 9, "result": {"tools": [{
+    "name": "meeting_minutes_setup", "description": "Meeting Minutes is not installed on this Mac.",
+    "inputSchema": {"type": "object"}}]}}
 
 for label, wrong_id, exit_after_probe, target in (
     ("wrong-id", True, False, "discover.id"),

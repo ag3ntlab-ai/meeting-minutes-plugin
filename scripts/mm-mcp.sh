@@ -1,8 +1,9 @@
 #!/bin/bash
 # Starts the MCP helper that ships inside the installed Meeting Minutes app.
 # Nothing is described here: the app answers the MCP handshake and lists its own tools.
-# If the app is not installed this script still speaks MCP: it answers the handshake, answers every
-# other request with a JSON-RPC error, and exits 1 at end of input.
+# If the app is not installed this script still speaks MCP: it answers the handshake, lists one setup
+# tool, answers any tool call with a tool error saying the app is not installed, answers every other
+# request with a JSON-RPC error, and exits 1 at end of input.
 APP_ID="ai.ag3ntlab.meetingminutes"
 IFS=: read -r -a dirs <<< "${MM_APP_DIRS:-/Applications:$HOME/Applications}"
 for dir in "${MM_APP_PATH:+$MM_APP_PATH}" "${dirs[@]}"; do
@@ -26,12 +27,18 @@ request_id() {
     *) return 1 ;;
   esac
 }
+NOT_INSTALLED="Meeting Minutes is not installed on this Mac. Install the app, open it once, then restart the assistant."
 while IFS= read -r line || [ -n "$line" ]; do
   id="$(request_id "$line")" || continue
-  if [ "$(printf '%s' "$line" | plutil -extract method raw -o - - 2>/dev/null)" = initialize ]; then
-    printf '{"jsonrpc":"2.0","id":%s,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"serverInfo":{"name":"Meeting Minutes","version":"1.0"}}}\n' "$id"
-  else
-    printf '{"jsonrpc":"2.0","id":%s,"error":{"code":-32000,"message":"Meeting Minutes is not installed on this Mac. Install the app, open it once, then restart the assistant."}}\n' "$id"
-  fi
+  case "$(printf '%s' "$line" | plutil -extract method raw -o - - 2>/dev/null)" in
+    initialize)
+      printf '{"jsonrpc":"2.0","id":%s,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"serverInfo":{"name":"Meeting Minutes","version":"1.0"}}}\n' "$id" ;;
+    tools/list)
+      printf '{"jsonrpc":"2.0","id":%s,"result":{"tools":[{"name":"meeting_minutes_setup","title":"Meeting Minutes setup","description":"Meeting Minutes is not installed on this Mac. Call this tool to get the installation instructions.","inputSchema":{"type":"object","properties":{}},"annotations":{"readOnlyHint":true}}]}}\n' "$id" ;;
+    tools/call)
+      printf '{"jsonrpc":"2.0","id":%s,"result":{"content":[{"type":"text","text":"%s"}],"isError":true}}\n' "$id" "$NOT_INSTALLED" ;;
+    *)
+      printf '{"jsonrpc":"2.0","id":%s,"error":{"code":-32000,"message":"%s"}}\n' "$id" "$NOT_INSTALLED" ;;
+  esac
 done
 exit 1
